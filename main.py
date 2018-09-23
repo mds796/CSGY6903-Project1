@@ -1,4 +1,10 @@
 def run(frequencies):
+    occurences = 0
+
+    for key in frequencies:
+        occurences += frequencies[key]
+
+    print(occurences)
     print(frequencies)
 
 
