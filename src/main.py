@@ -1,9 +1,12 @@
 import key
 
 def run(frequencies):
-    print(frequencies)
+    print("Frequencies: ", frequencies)
 
-    print(key.generateKey(frequencies))
+    k = key.generateKey(frequencies)
+    print("Key: ", k)
+
+    print("Ciphertext: ", key.encrypt("Hello, World!", k))
 
 
 if __name__ == '__main__':

@@ -37,3 +37,19 @@ def assignSubstitutionToLetter(frequencies):
     random.shuffle(assignments)
 
     return assignments
+
+
+def encrypt(plaintext, key):
+    ciphertext = []
+
+    for letter in plaintext.lower():
+        if letter not in key:
+            pass
+        else:
+            substitutions = key[letter]
+            index = random.randint(0, len(substitutions) - 1)
+            ciphertext.append(str(substitutions[index]))
+
+    return ",".join(ciphertext)
+
+    
