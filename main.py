@@ -1,11 +1,9 @@
+import key
+
 def run(frequencies):
-    occurences = 0
-
-    for key in frequencies:
-        occurences += frequencies[key]
-
-    print(occurences)
     print(frequencies)
+
+    print(key.generateKey(frequencies))
 
 
 if __name__ == '__main__':
