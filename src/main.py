@@ -6,7 +6,9 @@ def run(frequencies):
     k = key.generateKey(frequencies)
     print("Key: ", k)
 
-    print("Ciphertext: ", key.encrypt("Hello, World!", k))
+    c = key.encrypt("Hello, World!", k)
+    print("Ciphertext: ", c)
+    print("Plaintext: ", key.decrypt(c, k))
 
 
 if __name__ == '__main__':

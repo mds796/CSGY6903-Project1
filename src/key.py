@@ -43,9 +43,7 @@ def encrypt(plaintext, key):
     ciphertext = []
 
     for letter in plaintext.lower():
-        if letter not in key:
-            pass
-        else:
+        if letter in key:
             substitutions = key[letter]
             index = random.randint(0, len(substitutions) - 1)
             ciphertext.append(str(substitutions[index]))
@@ -53,3 +51,26 @@ def encrypt(plaintext, key):
     return ",".join(ciphertext)
 
     
+def decrypt(ciphertext, key):
+    plaintext = []
+
+    k = reverseKey(key)
+
+    for value in ciphertext.split(","):
+        i = int(value)
+        if i in k:
+            plaintext.append(k[i])
+        else:
+            plaintext.append("_")
+
+    return "".join(plaintext)
+
+
+def reverseKey(key):
+    k = {}
+
+    for letter in key:
+        for i in key[letter]:
+            k[i] = letter
+
+    return k 
