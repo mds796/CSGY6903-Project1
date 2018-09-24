@@ -23,7 +23,7 @@ def generateKey(frequencies):
         else:
             keys[letter] = [i]
 
-    return keys
+    return EncryptionKey(keys, reverseKey(keys))
 
 
 def assignSubstitutionToLetter(frequencies):
@@ -54,12 +54,10 @@ def encrypt(plaintext, key):
 def decrypt(ciphertext, key):
     plaintext = []
 
-    k = reverseKey(key)
-
     for value in ciphertext.split(","):
         i = int(value)
-        if i in k:
-            plaintext.append(k[i])
+        if i in key:
+            plaintext.append(key[i])
         else:
             plaintext.append("_")
 
@@ -74,3 +72,15 @@ def reverseKey(key):
             k[i] = letter
 
     return k 
+
+
+class EncryptionKey:
+    def __init__(self, k, r):
+        self.k = k
+        self.r = r
+
+    def encrypt(self, plaintext):
+        return encrypt(plaintext, self.k)
+
+    def decrypt(self, ciphertext):
+        return decrypt(ciphertext, self.r)

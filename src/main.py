@@ -4,11 +4,11 @@ def run(frequencies):
     print("Frequencies: ", frequencies)
 
     k = key.generateKey(frequencies)
-    print("Key: ", k)
+    print("Key: ", k.k)
 
-    c = key.encrypt("Hello, World!", k)
+    c = k.encrypt("Hello, World!")
     print("Ciphertext: ", c)
-    print("Plaintext: ", key.decrypt(c, k))
+    print("Plaintext: ", k.decrypt(c))
 
 
 if __name__ == '__main__':
