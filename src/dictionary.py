@@ -12,3 +12,47 @@ def readDictionary(filename):
 
     return words
 
+
+def readCandidates(filename):
+    """
+    Reads the set of known plaintexts from the given file.
+    """
+    candidates = []
+
+    with open(filename) as f:
+        readTest(f)
+        
+        while True:
+            candidate = readCandidate(f)
+            if candidate == "":
+                break
+            else:
+                candidates.append(candidate)
+
+    return candidates 
+
+def readTest(f):
+    f.readline() # Test 1
+    f.readline() # Blank line
+
+def readCandidate(f):
+    """Reads a candidate plaintext from the given file"""
+    f.readline().strip() # Candidate N
+    f.readline() # Blank line
+
+    candidate = []
+
+    while True:
+        position = f.tell()
+        line = f.readline()
+        if not line:
+            break
+
+        if line.startswith("Candidate"):
+            f.seek(position)
+            break
+        else:
+            candidate.append(line.strip())
+
+    return "".join(candidate)
+
