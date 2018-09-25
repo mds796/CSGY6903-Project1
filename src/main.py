@@ -1,14 +1,29 @@
 import key
+import dictionary
 
 def run(frequencies):
     print("Frequencies: ", frequencies)
 
     k = key.generateKey(frequencies)
     print("Key: ", k.k)
-
-    c = k.encrypt("Hello, World!")
+    c = k.encrypt(dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[0])
     print("Ciphertext: ", c)
     print("Plaintext: ", k.decrypt(c))
+
+
+
+
+
+def testOne(frequencies):
+
+    print dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[0]
+    unitList = list()
+    testString = dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[0]
+    for i in range(0, len(testString)):
+        if testString[i] == 'b':
+            unitList.append(i)
+
+    print unitList
 
 
 if __name__ == '__main__':
