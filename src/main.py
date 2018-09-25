@@ -2,28 +2,48 @@ import key
 import dictionary
 
 def run(frequencies):
-    print("Frequencies: ", frequencies)
-
+    # print("Frequencies: ", frequencies)
+    #
     k = key.generateKey(frequencies)
-    print("Key: ", k.k)
-    c = k.encrypt(dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[0])
-    print("Ciphertext: ", c)
-    print("Plaintext: ", k.decrypt(c))
+    # print("Key: ", k.k)
+    c = k.encrypt(dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[1])
+    #print("Ciphertext: ", c)
+    # print("Plaintext: ", k.decrypt(c))
 
 
+    testOne(frequencies, c)
 
 
+def testOne(frequencies, c):
+    """
+    Takes ciphertext as input.
+    Finds index of 'b' for each plaintext.
+    Prints which of the 5 plaintexts matches the ciphertext.
+    """
+    cipher = map(int,c.split(','))
+    #print cipher
+    flag = 0
 
-def testOne(frequencies):
+    plaintexts = dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')
+    #print plaintexts[0]
+    for plaintext in plaintexts:
+        bIndex = list()
+        #print plaintext
+        for i in range(0, len(plaintext)):
+            if plaintext[i] == 'b':
+                bIndex.append(i)
+        #print bIndex
+        testCase = cipher[bIndex[0]]
 
-    print dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[0]
-    unitList = list()
-    testString = dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[0]
-    for i in range(0, len(testString)):
-        if testString[i] == 'b':
-            unitList.append(i)
+        for index in bIndex:
+            if cipher[index] != testCase:
+                flag = 0
+                break
+            else:
+                flag = 1
+        if flag == 1:
+            print plaintext
 
-    print unitList
 
 
 if __name__ == '__main__':
