@@ -1,12 +1,11 @@
-import key
-import dictionary
+import src.dictionary
 
 def run(frequencies):
     # print("Frequencies: ", frequencies)
     #
     k = key.generateKey(frequencies)
     # print("Key: ", k.k)
-    c = k.encrypt(dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')[1])
+    c = k.encrypt(dictionary.readCandidates('test1_candidate_5_plaintexts.txt')[1])
     #print("Ciphertext: ", c)
     # print("Plaintext: ", k.decrypt(c))
 
