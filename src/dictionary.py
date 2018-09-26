@@ -1,5 +1,5 @@
 import random
-
+import itertools
 
 class Dictionary:
     def __init__(self, words):
@@ -15,7 +15,10 @@ class Dictionary:
 
         return Dictionary(copy)
 
-    def generate(self, max_size, indexer):
+    def letters(self):
+        return set(itertools.chain.from_iterable(self.words))
+
+    def generate(self, max_size, indexer=random.randint):
         selected = []
         size = 0
 

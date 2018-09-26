@@ -6,8 +6,12 @@ INVALID_LETTER = "_"
 INVALID_CIPHER = "-1"
 
 
+def random_scheduler(substitutions):
+    return substitutions[random.randint(0, len(substitutions) - 1)]
+
+
 class SubstitutionCipher:
-    def __init__(self, key, scheduler):
+    def __init__(self, key, scheduler=random_scheduler):
         self.scheduler = scheduler
         self.key = key
 
@@ -67,7 +71,7 @@ def generate_homophonic(frequencies):
         else:
             key[letter] = [i]
 
-    return SubstitutionCipher(key, lambda substitutions: substitutions[random.randint(0, len(substitutions) - 1)])
+    return SubstitutionCipher(key)
 
 
 def assign_substitution_to_letter(frequencies):

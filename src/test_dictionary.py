@@ -8,6 +8,9 @@ class TestDictionary(TestCase):
     def setUp(self):
         self.dictionary = Dictionary(["foo", "bar"])
 
+    def test_letters(self):
+        self.assertEqual(set("foobar"), self.dictionary.letters())
+
     def test_generate(self):
         text = self.dictionary.generate(10, indexer)
 
