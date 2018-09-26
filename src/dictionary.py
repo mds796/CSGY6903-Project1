@@ -1,4 +1,24 @@
-def readDictionary(filename):
+class Dictionary:
+    def __init__(self, words):
+        self.words = words
+
+    def merge(self, other):
+        return Dictionary(self.words + other.words)
+
+    def __hash__(self):
+        return self.words.__hash__()
+
+    def __eq__(self, other):
+        return self.words.__eq__(other.words)
+
+    def __len__(self):
+        return self.words.__len__()
+
+    def __iter__(self):
+        return self.words.__iter__()
+
+
+def read_from_file(filename):
     """
     Reads the dictionary from the given file.
     Each line is assumed to contain a single word in the dictionary.
@@ -8,51 +28,7 @@ def readDictionary(filename):
 
     with open(filename) as f:
         for line in f:
-            words.append(line.strip())
+            words.append(line.strip().lower())
 
-    return words
-
-
-def readCandidates(filename):
-    """
-    Reads the set of known plaintexts from the given file.
-    """
-    candidates = []
-
-    with open(filename) as f:
-        readTest(f)
-        
-        while True:
-            candidate = readCandidate(f)
-            if candidate == "":
-                break
-            else:
-                candidates.append(candidate)
-
-    return candidates 
-
-def readTest(f):
-    f.readline() # Test 1
-    f.readline() # Blank line
-
-def readCandidate(f):
-    """Reads a candidate plaintext from the given file"""
-    f.readline().strip() # Candidate N
-    f.readline() # Blank line
-
-    candidate = []
-
-    while True:
-        position = f.tell()
-        line = f.readline()
-        if not line:
-            break
-
-        if line.startswith("Candidate"):
-            f.seek(position)
-            break
-        else:
-            candidate.append(line.strip())
-
-    return "".join(candidate)
+    return Dictionary(words)
 
