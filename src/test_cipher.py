@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.cipher import SubstitutionCipher
+from src.cipher import SubstitutionCipher, generate_homophonic
 
 
 class TestSubstitutionCipher(TestCase):
@@ -27,3 +27,14 @@ class TestSubstitutionCipher(TestCase):
 
     def test_decrypt_with_empty_message(self):
         self.assertEqual(self.cipher.decrypt(""), "")
+
+    def test_generated_key(self):
+        self.cipher = generate_homophonic({"a": 1, "b": 1})
+
+        a_mapping = self.cipher.encryption_key["a"][0]
+        b_mapping = self.cipher.encryption_key["b"][0]
+
+        c = self.cipher.encrypt("abcba")
+
+        self.assertEqual(c, "%d,%d,%d,%d,%d" % (a_mapping, b_mapping, -1, b_mapping, a_mapping))
+        self.assertEqual(self.cipher.decrypt(c), "ab_ba")

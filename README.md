@@ -8,4 +8,4 @@ Must has python >= 3.6 installed.
 To test the code, run `python3 -m unittest` from the root of the repository
 
 ## Executing
-To run the cipher breaker, run `python3 src/main.py` from the root of the repository
+To run the cipher breaker, run `python3 -m src.main` from the root of the repository

@@ -1,5 +1,7 @@
 import random
 
+DELIMITER = ","
+
 INVALID_LETTER = "_"
 INVALID_CIPHER = "-1"
 
@@ -32,7 +34,7 @@ class SubstitutionCipher:
 
         plaintext = []
 
-        for value in ciphertext.split(","):
+        for value in ciphertext.split(DELIMITER):
             i = int(value)
             if i in self.decryption_key:
                 plaintext.append(self.decryption_key[i])
@@ -65,7 +67,7 @@ def generate_homophonic(frequencies):
         else:
             key[letter] = [i]
 
-    return SubstitutionCipher(key, lambda substitutions: random.randint(0, len(substitutions) - 1))
+    return SubstitutionCipher(key, lambda substitutions: substitutions[random.randint(0, len(substitutions) - 1)])
 
 
 def assign_substitution_to_letter(frequencies):

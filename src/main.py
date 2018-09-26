@@ -1,48 +1,23 @@
+import src.candidate
 import src.dictionary
+from src.cipher import generate_homophonic
+
 
 def run(frequencies):
-    # print("Frequencies: ", frequencies)
-    #
-    k = key.generateKey(frequencies)
-    # print("Key: ", k.k)
-    c = k.encrypt(dictionary.readCandidates('test1_candidate_5_plaintexts.txt')[1])
-    #print("Ciphertext: ", c)
-    # print("Plaintext: ", k.decrypt(c))
+    cipher = generate_homophonic(frequencies)
 
+    candidates = src.candidate.read_from_file('test1_candidate_5_plaintexts.txt')
+    dictionary = src.dictionary.read_from_file('test2_candidate_70_english_words.txt')
 
-    testOne(frequencies, c)
+    for candidate in candidates:
+        c = cipher.encrypt(candidate.text)
+        m = cipher.decrypt(c)
 
-
-def testOne(frequencies, c):
-    """
-    Takes ciphertext as input.
-    Finds index of 'b' for each plaintext.
-    Prints which of the 5 plaintexts matches the ciphertext.
-    """
-    cipher = map(int,c.split(','))
-    #print cipher
-    flag = 0
-
-    plaintexts = dictionary.readCandidates('../test1_candidate_5_plaintexts.txt')
-    #print plaintexts[0]
-    for plaintext in plaintexts:
-        bIndex = list()
-        #print plaintext
-        for i in range(0, len(plaintext)):
-            if plaintext[i] == 'b':
-                bIndex.append(i)
-        #print bIndex
-        testCase = cipher[bIndex[0]]
-
-        for index in bIndex:
-            if cipher[index] != testCase:
-                flag = 0
-                break
-            else:
-                flag = 1
-        if flag == 1:
-            print plaintext
-
+        print("\nTesting candidate...")
+        print("\nOriginal: ", candidate.text)
+        print("\nCiphertext: ", c)
+        print("\nPlaintext: ", m)
+        print("\nReflexive: ", m == candidate.text)
 
 
 if __name__ == '__main__':
