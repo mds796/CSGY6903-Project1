@@ -15,7 +15,7 @@ class TestCandidate(TestCase):
         self.assertFalse("" in Candidate("").dictionary())
 
     def test_dictionary_when_none(self):
-        with self.assertRaises(AttributeError, msg="'NoneType' object has no attribute 'split'") as contextManager:
+        with self.assertRaises(AttributeError, msg="'NoneType' object has no attribute 'split'"):
             "" in Candidate(None).dictionary()
 
     def test_read_from_file(self):

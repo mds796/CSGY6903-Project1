@@ -8,6 +8,17 @@ class TestDictionary(TestCase):
     def setUp(self):
         self.dictionary = Dictionary(["foo", "bar"])
 
+    def test_generate(self):
+        text = self.dictionary.generate(10, indexer)
+
+        self.assertEqual("foo foo", text)
+
+    def test_shuffle(self):
+        shuffled = self.dictionary.shuffle(shuffle)
+
+        self.assertTrue("foo" in shuffled)
+        self.assertNotEqual(shuffled, self.dictionary)
+
     def test_contains_when_in_dictionary(self):
         self.assertTrue("foo" in self.dictionary)
 
@@ -18,7 +29,7 @@ class TestDictionary(TestCase):
         self.assertFalse("baz" in Dictionary([]))
 
     def test_contains_when_dictionary_is_none(self):
-        with self.assertRaises(TypeError, msg="Words must be a list.") as contextManager:
+        with self.assertRaises(TypeError, msg="Words must be a list."):
             "baz" in Dictionary(None)
 
     def test_contains_when_word_is_none(self):
@@ -34,7 +45,7 @@ class TestDictionary(TestCase):
         self.assertEqual(Dictionary([]).merge(self.dictionary), self.dictionary)
 
     def test_merge_when_this_is_none(self):
-        with self.assertRaises(AttributeError, msg="'NoneType' object has no attribute 'words'") as contextManager:
+        with self.assertRaises(AttributeError, msg="'NoneType' object has no attribute 'words'"):
             self.dictionary.merge(None)
 
     def test_read_from_file(self):
@@ -42,3 +53,11 @@ class TestDictionary(TestCase):
 
         self.assertEqual(len(self.dictionary), 70)
         self.assertTrue("vessel" in self.dictionary)
+
+
+def shuffle(l):
+    l[0], l[-1] = l[-1], l[0]
+
+
+def indexer(start, end):
+    return start

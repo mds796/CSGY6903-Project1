@@ -9,8 +9,7 @@ INVALID_CIPHER = "-1"
 class SubstitutionCipher:
     def __init__(self, key, scheduler):
         self.scheduler = scheduler
-        self.encryption_key = key
-        self.decryption_key = self.inverted_key()
+        self.key = key
 
     def encrypt(self, plaintext):
         if plaintext is "" or plaintext is None:
@@ -21,8 +20,8 @@ class SubstitutionCipher:
         for letter in plaintext:
             c = INVALID_CIPHER
 
-            if letter in self.encryption_key:
-                c = self.scheduler(self.encryption_key[letter])
+            if letter in self.key:
+                c = self.scheduler(self.key[letter])
 
             ciphertext.append(str(c))
 
@@ -36,18 +35,19 @@ class SubstitutionCipher:
 
         for value in ciphertext.split(DELIMITER):
             i = int(value)
-            if i in self.decryption_key:
-                plaintext.append(self.decryption_key[i])
+            if i in self.inverted_key:
+                plaintext.append(self.inverted_key[i])
             else:
                 plaintext.append(INVALID_LETTER)
 
         return "".join(plaintext)
 
+    @property
     def inverted_key(self):
         key = {}
 
-        for letter in self.encryption_key:
-            for i in self.encryption_key[letter]:
+        for letter in self.key:
+            for i in self.key[letter]:
                 key[i] = letter
 
         return key

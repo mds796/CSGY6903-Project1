@@ -1,9 +1,35 @@
+import random
+
+
 class Dictionary:
     def __init__(self, words):
         self.words = words
 
     def merge(self, other):
         return Dictionary(self.words + other.words)
+
+    def shuffle(self, shuffler=random.shuffle):
+        copy = list(self.words)
+
+        shuffler(copy)
+
+        return Dictionary(copy)
+
+    def generate(self, max_size, indexer):
+        selected = []
+        size = 0
+
+        while size < max_size:
+            index = indexer(0, len(self.words) - 1)
+
+            word = self.words[index]
+            size += len(word)
+
+            if size < max_size:
+                selected.append(word)
+                size += 1  # add the space
+
+        return " ".join(selected)
 
     def __hash__(self):
         return self.words.__hash__()
@@ -31,4 +57,3 @@ def read_from_file(filename):
             words.append(line.strip().lower())
 
     return Dictionary(words)
-

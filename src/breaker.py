@@ -1,14 +1,22 @@
 from src.dictionary import Dictionary
 
 
-class CodeBreaker:
-    def break_with_candidates(self, candidates):
-        dictionary = Dictionary([])
+class DictionaryCodeBreaker:
+    def __init__(self, dictionary):
+        self.dictionary = dictionary
 
-        for candidate in candidates:
-            dictionary = dictionary.merge(candidate.dictionary())
+    def attack(self, ciphertext):
+        return ""
 
-        self.break_with_dictionary(dictionary)
 
-    def break_with_dictionary(self, dictionary):
-        pass
+def breaker_with_candidates(candidates):
+    dictionary = Dictionary([])
+
+    for candidate in candidates:
+        dictionary = dictionary.merge(candidate.dictionary())
+
+    return breaker_with_dictionary(dictionary)
+
+
+def breaker_with_dictionary(dictionary):
+    return DictionaryCodeBreaker(dictionary)

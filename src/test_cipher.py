@@ -31,8 +31,8 @@ class TestSubstitutionCipher(TestCase):
     def test_generated_key(self):
         self.cipher = generate_homophonic({"a": 1, "b": 1})
 
-        a_mapping = self.cipher.encryption_key["a"][0]
-        b_mapping = self.cipher.encryption_key["b"][0]
+        a_mapping = self.cipher.key["a"][0]
+        b_mapping = self.cipher.key["b"][0]
 
         c = self.cipher.encrypt("abcba")
 

@@ -2,6 +2,10 @@ import src.candidate
 import src.dictionary
 from src.cipher import generate_homophonic
 
+FREQUENCIES = {" ": 19, "a": 7, "b": 1, "c": 2, "d": 4, "e": 10, "f": 2, "g": 2, "h": 5, "i": 6, "j": 1, "k": 1,
+                      "l": 3, "m": 2, "n": 6, "o": 6, "p": 2, "q": 1, "r": 5, "s": 5, "t": 7, "u": 2, "v": 1, "w": 2,
+                      "x": 1, "y": 2, "z": 1}
+
 
 def run(frequencies):
     cipher = generate_homophonic(frequencies)
@@ -21,32 +25,4 @@ def run(frequencies):
 
 
 if __name__ == '__main__':
-    run({
-        " ": 19,
-        "a": 7,
-        "b": 1,
-        "c": 2,
-        "d": 4,
-        "e": 10,
-        "f": 2,
-        "g": 2,
-        "h": 5,
-        "i": 6,
-        "j": 1,
-        "k": 1,
-        "l": 3,
-        "m": 2,
-        "n": 6,
-        "o": 6,
-        "p": 2,
-        "q": 1,
-        "r": 5,
-        "s": 5,
-        "t": 7,
-        "u": 2,
-        "v": 1,
-        "w": 2,
-        "x": 1,
-        "y": 2,
-        "z": 1
-        })
+    run(FREQUENCIES)
