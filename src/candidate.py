@@ -1,8 +1,8 @@
-# from src.dictionary import Dictionary
+from src.dictionary import Dictionary
 
 
 """ Path changed by Siddharth"""
-from dictionary import Dictionary
+# from dictionary import Dictionary
 
 class Candidate:
     def __init__(self, text):
