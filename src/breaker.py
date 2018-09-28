@@ -2,9 +2,19 @@ from copy import deepcopy
 
 from src.cipher import DELIMITER, SubstitutionCipher
 from src.dictionary import Dictionary
+from src.candidate_attacker import CandidateAttacker
 
 
-class DictionaryCodeBreaker:
+class Attacker:
+    def  __init__(self, frequencies, *args, **kwargs):
+        pass
+
+    def attack(self, ciphertext) -> str:
+        """Attacks the given ciphertext, to detrmine the encrypted plaintext"""
+        pass
+
+
+class DictionaryCodeBreaker(Attacker):
     def __init__(self, frequencies, dictionary):
         self.frequencies = frequencies
         self.dictionary = dictionary
@@ -31,8 +41,6 @@ class DictionaryCodeBreaker:
         else:
             for word in self.dictionary.shuffle():
                 copy_cipher = SubstitutionCipher(deepcopy(candidate_cipher.key))
-
-                print(word, ciphertext, copy_cipher.key)
 
                 word_plaintext = word
                 word_ciphertext, remaining_ciphertext = ciphertext[:len(word_plaintext)], ciphertext[len(word_plaintext):]
@@ -67,12 +75,7 @@ class DictionaryCodeBreaker:
 
 
 def breaker_with_candidates(frequencies, candidates):
-    dictionary = Dictionary([])
-
-    for candidate in candidates:
-        dictionary = dictionary.merge(candidate.dictionary())
-
-    return breaker_with_dictionary(frequencies, dictionary)
+    return CandidateAttacker(frequencies, candidates)
 
 
 def breaker_with_dictionary(frequencies, dictionary):

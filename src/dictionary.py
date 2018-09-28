@@ -6,7 +6,7 @@ class Dictionary:
         self.words = words
 
     def merge(self, other):
-        return Dictionary(self.words + other.words)
+        return Dictionary(list(set(self.words + other.words)))
 
     def shuffle(self, shuffler=random.shuffle):
         copy = list(self.words)

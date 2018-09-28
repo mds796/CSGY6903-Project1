@@ -13,7 +13,7 @@ class TestScheduledTimeout(TestCase):
 
         with self.assertRaises(TimeoutError, msg="Timed out"):
             with ScheduledTimeout(1, "Timed out", scheduler(clock.time, lambda: None)):
-                print("Foo")
+                self.assertTrue(1 == 2)
 
 
 class LogicalClock:
