@@ -13,6 +13,13 @@ class DictionaryAttacker(Attacker):
 
         self.frequencies = frequencies
         self.dictionary = dictionary
+        self.smallest_word = self.smallest_word_size()
+
+    def smallest_word_size(self):
+        if len(self.dictionary.words) == 0:
+            return 0
+
+        return min([len(word) for word in self.dictionary])
 
     def attack(self, ciphertext):
         if ciphertext == "" or ciphertext is None:
@@ -32,7 +39,7 @@ class DictionaryAttacker(Attacker):
     def attack_recursive(self, ciphertext_parts, candidate_cipher, accumulator):
         if len(ciphertext_parts) == 0:
             accumulator.append(candidate_cipher)
-        elif len(ciphertext_parts) < self.smallest_word_size:
+        elif len(ciphertext_parts) < self.smallest_word:
             pass  # Could not find a key
         else:
             for word in self.dictionary:
@@ -47,7 +54,7 @@ class DictionaryAttacker(Attacker):
                     for m, c in zip(word_plaintext, word_ciphertext):
                         self.update_key(m, c, copy_cipher)
 
-                    if len(remaining_ciphertext) > self.smallest_word_size:
+                    if len(remaining_ciphertext) > self.smallest_word:
                         c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
                         self.update_key(SPACE, c, copy_cipher)
                 except ValueError:
@@ -65,7 +72,3 @@ class DictionaryAttacker(Attacker):
             candidate_cipher.key[m].append(c)
         else:
             candidate_cipher.key[m] = [c]
-
-    @property
-    def smallest_word_size(self):
-        return min([len(word) for word in self.dictionary])
