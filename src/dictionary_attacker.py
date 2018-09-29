@@ -46,19 +46,19 @@ class DictionaryAttacker(Attacker):
                 try:
                     for m, c in zip(word_plaintext, word_ciphertext):
                         self.update_key(m, c, copy_cipher)
+
+                    if len(remaining_ciphertext) > self.smallest_word_size:
+                        c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
+                        self.update_key(SPACE, c, copy_cipher)
                 except ValueError:
                     continue
-
-                if len(remaining_ciphertext) > self.smallest_word_size:
-                    c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
-                    self.update_key(SPACE, c, copy_cipher)
 
                 self.attack_recursive(remaining_ciphertext, copy_cipher, accumulator)
 
     @staticmethod
     def update_key(m, c, candidate_cipher):
         if c in candidate_cipher.inverted_key and candidate_cipher.inverted_key[c] != m:
-            raise(ValueError("Already mapped ciphertext letter to different plaintext letter."))
+            raise (ValueError("Already mapped ciphertext letter to different plaintext letter."))
         elif c in candidate_cipher.inverted_key:
             pass  # already mapped ciphertext letter to same plaintext letter
         elif m in candidate_cipher.key:
