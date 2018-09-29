@@ -2,6 +2,7 @@ from copy import deepcopy
 
 from src.attacker import Attacker
 from src.cipher import DELIMITER, SubstitutionCipher
+from src.scorer import Scorer
 
 
 class DictionaryAttacker(Attacker):
@@ -23,7 +24,7 @@ class DictionaryAttacker(Attacker):
         self.attack_recursive(ciphers, number_of_unique_ciphers, SubstitutionCipher({}), accumulator)
 
         if len(accumulator) > 0:
-            return accumulator[0].decrypt(ciphertext)
+            return Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator).decrypt(ciphertext)
         else:
             return None
 
