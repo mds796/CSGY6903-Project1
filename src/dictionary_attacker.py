@@ -17,22 +17,21 @@ class DictionaryAttacker(Attacker):
             return ""
 
         ciphers = [int(c) for c in ciphertext.split(DELIMITER)]
-        number_of_unique_ciphers = len(set(ciphers))
 
         accumulator = []
 
-        self.attack_recursive(ciphers, number_of_unique_ciphers, SubstitutionCipher({}), accumulator)
+        self.attack_recursive(ciphers, SubstitutionCipher({}), accumulator)
 
         if len(accumulator) > 0:
             return Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator).decrypt(ciphertext)
         else:
             return None
 
-    def attack_recursive(self, ciphertext, number_of_unique_ciphers, candidate_cipher, accumulator):
-        if len(candidate_cipher.inverted_key) >= number_of_unique_ciphers:
-            return candidate_cipher  # we mapped every cipher letter to a plain letter
+    def attack_recursive(self, ciphertext, candidate_cipher, accumulator):
+        if len(ciphertext) == 0:
+            accumulator.append(candidate_cipher)
         elif len(ciphertext) < self.smallest_word_size:
-            return None  # Could not find a key
+            return # Could not find a key
         else:
             for word in self.dictionary.shuffle():
                 copy_cipher = SubstitutionCipher(deepcopy(candidate_cipher.key))
@@ -48,11 +47,9 @@ class DictionaryAttacker(Attacker):
                     c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
                     self.update_key(" ", c, copy_cipher)
 
-                cipher = self.attack_recursive(remaining_ciphertext, number_of_unique_ciphers, copy_cipher)
-                if cipher is not None:
-                    accumulator.append(cipher)
+                self.attack_recursive(remaining_ciphertext, copy_cipher, accumulator)
 
-            return None
+            return
 
     @staticmethod
     def update_key(m, c, candidate_cipher):

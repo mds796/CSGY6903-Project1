@@ -15,11 +15,7 @@ class Scorer:
             plaintext_frequencies = Counter(plaintext)
             frequency_difference = actual_frequencies - plaintext_frequencies
 
-            mse = 0
-            for l in frequency_difference:
-                mse += frequency_difference[l]
-
-            mse /= len(frequency_difference)
+            mse = self.compute_mse(frequency_difference)
 
             scores.append((cipher, mse))
 
@@ -31,3 +27,17 @@ class Scorer:
                 best_cipher, best_mse = pair
 
         return best_cipher
+
+    @staticmethod
+    def compute_mse(frequency_difference):
+        mse = 0
+
+        if len(frequency_difference) == 0:
+            return mse
+
+        for l in frequency_difference:
+            mse += frequency_difference[l]
+
+        mse /= len(frequency_difference)
+
+        return mse
