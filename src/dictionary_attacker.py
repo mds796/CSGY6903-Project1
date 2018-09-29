@@ -4,6 +4,8 @@ from src.attacker import Attacker
 from src.cipher import DELIMITER, SubstitutionCipher
 from src.scorer import Scorer
 
+SPACE = " "
+
 
 class DictionaryAttacker(Attacker):
     def __init__(self, frequencies, dictionary, *args, **kwargs):
@@ -15,46 +17,48 @@ class DictionaryAttacker(Attacker):
     def attack(self, ciphertext):
         if ciphertext == "" or ciphertext is None:
             return ""
-
-        ciphers = [int(c) for c in ciphertext.split(DELIMITER)]
-
         accumulator = []
 
-        self.attack_recursive(ciphers, SubstitutionCipher({}), accumulator)
+        ciphertext_parts = [int(c) for c in ciphertext.split(DELIMITER)]
+        self.attack_recursive(ciphertext_parts, SubstitutionCipher({}), accumulator)
 
+        p = [c.decrypt(ciphertext) for c in accumulator]
         if len(accumulator) > 0:
-            return Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator).decrypt(ciphertext)
+            best_cipher = Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator)
+            return best_cipher.decrypt(ciphertext)
         else:
             return None
 
-    def attack_recursive(self, ciphertext, candidate_cipher, accumulator):
-        if len(ciphertext) == 0:
+    def attack_recursive(self, ciphertext_parts, candidate_cipher, accumulator):
+        if len(ciphertext_parts) == 0 and candidate_cipher.inverted_key not in [c.inverted_key for c in accumulator]:
             accumulator.append(candidate_cipher)
-        elif len(ciphertext) < self.smallest_word_size:
-            return # Could not find a key
+        elif len(ciphertext_parts) < self.smallest_word_size:
+            pass  # Could not find a key
         else:
-            for word in self.dictionary.shuffle():
+            for word in self.dictionary:
                 copy_cipher = SubstitutionCipher(deepcopy(candidate_cipher.key))
 
                 word_plaintext = word
-                word_ciphertext, remaining_ciphertext = ciphertext[:len(word_plaintext)], ciphertext[
-                                                                                          len(word_plaintext):]
+                word_ciphertext = ciphertext_parts[:len(word_plaintext)]
 
-                for m, c in zip(word_plaintext, word_ciphertext):
-                    self.update_key(m, c, copy_cipher)
+                remaining_ciphertext = ciphertext_parts[len(word_plaintext):]
+
+                try:
+                    for m, c in zip(word_plaintext, word_ciphertext):
+                        self.update_key(m, c, copy_cipher)
+                except ValueError:
+                    continue
 
                 if len(remaining_ciphertext) > self.smallest_word_size:
                     c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
-                    self.update_key(" ", c, copy_cipher)
+                    self.update_key(SPACE, c, copy_cipher)
 
                 self.attack_recursive(remaining_ciphertext, copy_cipher, accumulator)
-
-            return
 
     @staticmethod
     def update_key(m, c, candidate_cipher):
         if c in candidate_cipher.inverted_key and candidate_cipher.inverted_key[c] != m:
-            return None  # already mapped ciphertext letter to different plaintext letter
+            raise(ValueError("Already mapped ciphertext letter to different plaintext letter."))
         elif c in candidate_cipher.inverted_key:
             pass  # already mapped ciphertext letter to same plaintext letter
         elif m in candidate_cipher.key:

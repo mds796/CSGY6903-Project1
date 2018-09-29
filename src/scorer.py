@@ -23,7 +23,7 @@ class Scorer:
 
         for pair in scores:
             c, s = pair
-            if s > best_mse:
+            if s < best_mse:
                 best_cipher, best_mse = pair
 
         return best_cipher
@@ -36,7 +36,7 @@ class Scorer:
             return mse
 
         for l in frequency_difference:
-            mse += frequency_difference[l]
+            mse += frequency_difference[l] ** 2
 
         mse /= len(frequency_difference)
 
