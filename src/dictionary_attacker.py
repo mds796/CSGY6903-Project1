@@ -64,9 +64,11 @@ class DictionaryAttacker(Attacker):
 
     @staticmethod
     def update_key(m, c, candidate_cipher):
-        if c in candidate_cipher.inverted_key and candidate_cipher.inverted_key[c] != m:
+        inverted_key = candidate_cipher.inverted_key
+
+        if c in inverted_key and inverted_key[c] != m:
             raise (ValueError("Already mapped ciphertext letter to different plaintext letter."))
-        elif c in candidate_cipher.inverted_key:
+        elif c in inverted_key:
             pass  # already mapped ciphertext letter to same plaintext letter
         elif m in candidate_cipher.key:
             candidate_cipher.key[m].append(c)
