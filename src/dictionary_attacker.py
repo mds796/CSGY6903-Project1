@@ -17,12 +17,12 @@ class DictionaryAttacker(Attacker):
     def attack(self, ciphertext):
         if ciphertext == "" or ciphertext is None:
             return ""
-        accumulator = []
 
         ciphertext_parts = [int(c) for c in ciphertext.split(DELIMITER)]
+        accumulator = []
+
         self.attack_recursive(ciphertext_parts, SubstitutionCipher({}), accumulator)
 
-        p = [c.decrypt(ciphertext) for c in accumulator]
         if len(accumulator) > 0:
             best_cipher = Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator)
             return best_cipher.decrypt(ciphertext)
@@ -30,7 +30,7 @@ class DictionaryAttacker(Attacker):
             return None
 
     def attack_recursive(self, ciphertext_parts, candidate_cipher, accumulator):
-        if len(ciphertext_parts) == 0 and candidate_cipher.inverted_key not in [c.inverted_key for c in accumulator]:
+        if len(ciphertext_parts) == 0:
             accumulator.append(candidate_cipher)
         elif len(ciphertext_parts) < self.smallest_word_size:
             pass  # Could not find a key
