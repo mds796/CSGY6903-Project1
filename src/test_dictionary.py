@@ -11,6 +11,9 @@ class TestDictionary(TestCase):
     def test_letters(self):
         self.assertEqual(set("foobar"), self.dictionary.letters())
 
+    def test_letter_frequencies(self):
+        self.assertEqual({"f": 1, "o": 2, "b": 1, "a": 1, "r": 1}, self.dictionary.letter_frequencies())
+
     def test_generate(self):
         text = self.dictionary.generate(10, indexer)
 
@@ -42,10 +45,10 @@ class TestDictionary(TestCase):
         self.assertFalse(1 in self.dictionary)
 
     def test_merge_when_other_is_empty(self):
-        self.assertEqual(self.dictionary.merge(Dictionary([])), self.dictionary)
+        self.assertEqual(set(self.dictionary.merge(Dictionary([])).words), set(self.dictionary.words))
 
     def test_merge_when_this_is_empty(self):
-        self.assertEqual(Dictionary([]).merge(self.dictionary), self.dictionary)
+        self.assertEqual(set(Dictionary([]).merge(self.dictionary)), set(self.dictionary.words))
 
     def test_merge_when_this_is_none(self):
         with self.assertRaises(AttributeError, msg="'NoneType' object has no attribute 'words'"):

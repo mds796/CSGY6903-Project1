@@ -1,5 +1,7 @@
 import random
 import itertools
+from collections import Counter
+
 
 class Dictionary:
     def __init__(self, words):
@@ -33,6 +35,14 @@ class Dictionary:
                 size += 1  # add the space
 
         return " ".join(selected)
+
+    def letter_frequencies(self):
+        counter = Counter()
+
+        for word in self.words:
+            counter.update(word)
+
+        return counter
 
     def __hash__(self):
         return self.words.__hash__()

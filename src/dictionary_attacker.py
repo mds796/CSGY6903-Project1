@@ -1,21 +1,13 @@
 from copy import deepcopy
 
+from src.attacker import Attacker
 from src.cipher import DELIMITER, SubstitutionCipher
-from src.dictionary import Dictionary
-from src.candidate_attacker import CandidateAttacker
 
 
-class Attacker:
-    def  __init__(self, frequencies, *args, **kwargs):
-        pass
+class DictionaryAttacker(Attacker):
+    def __init__(self, frequencies, dictionary, *args, **kwargs):
+        super().__init__(frequencies, *args, **kwargs)
 
-    def attack(self, ciphertext) -> str:
-        """Attacks the given ciphertext, to detrmine the encrypted plaintext"""
-        pass
-
-
-class DictionaryCodeBreaker(Attacker):
-    def __init__(self, frequencies, dictionary):
         self.frequencies = frequencies
         self.dictionary = dictionary
 
@@ -26,14 +18,16 @@ class DictionaryCodeBreaker(Attacker):
         ciphers = [int(c) for c in ciphertext.split(DELIMITER)]
         number_of_unique_ciphers = len(set(ciphers))
 
-        cipher = self.attack_recursive(ciphers, number_of_unique_ciphers, SubstitutionCipher({}))
+        accumulator = []
 
-        if cipher is not None:
-            return cipher.decrypt(ciphertext)
+        self.attack_recursive(ciphers, number_of_unique_ciphers, SubstitutionCipher({}), accumulator)
+
+        if len(accumulator) > 0:
+            return accumulator[0].decrypt(ciphertext)
         else:
             return None
 
-    def attack_recursive(self, ciphertext, number_of_unique_ciphers, candidate_cipher):
+    def attack_recursive(self, ciphertext, number_of_unique_ciphers, candidate_cipher, accumulator):
         if len(candidate_cipher.inverted_key) >= number_of_unique_ciphers:
             return candidate_cipher  # we mapped every cipher letter to a plain letter
         elif len(ciphertext) < self.smallest_word_size:
@@ -43,7 +37,8 @@ class DictionaryCodeBreaker(Attacker):
                 copy_cipher = SubstitutionCipher(deepcopy(candidate_cipher.key))
 
                 word_plaintext = word
-                word_ciphertext, remaining_ciphertext = ciphertext[:len(word_plaintext)], ciphertext[len(word_plaintext):]
+                word_ciphertext, remaining_ciphertext = ciphertext[:len(word_plaintext)], ciphertext[
+                                                                                          len(word_plaintext):]
 
                 for m, c in zip(word_plaintext, word_ciphertext):
                     self.update_key(m, c, copy_cipher)
@@ -54,7 +49,7 @@ class DictionaryCodeBreaker(Attacker):
 
                 cipher = self.attack_recursive(remaining_ciphertext, number_of_unique_ciphers, copy_cipher)
                 if cipher is not None:
-                    return cipher
+                    accumulator.append(cipher)
 
             return None
 
@@ -72,11 +67,3 @@ class DictionaryCodeBreaker(Attacker):
     @property
     def smallest_word_size(self):
         return min([len(word) for word in self.dictionary])
-
-
-def breaker_with_candidates(frequencies, candidates):
-    return CandidateAttacker(frequencies, candidates)
-
-
-def breaker_with_dictionary(frequencies, dictionary):
-    return DictionaryCodeBreaker(frequencies, dictionary)
