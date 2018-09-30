@@ -6,12 +6,16 @@ class Candidate:
         self.text = text
 
     def dictionary(self):
+        return Dictionary(self.words)
+
+    @property
+    def words(self):
         words = self.text.split(" ")
 
         if "" in words:
             words.remove("")
 
-        return Dictionary(words)
+        return words
 
 
 def read_from_file(filename):

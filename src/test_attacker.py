@@ -13,7 +13,6 @@ class TestDictionaryAttacker(TestCase):
     def setUp(self):
         self.cipher = generate_homophonic(FREQUENCIES)
 
-    @skip
     def test_break_with_candidates(self):
         candidates = src.candidate.read_from_file("test1_candidate_5_plaintexts.txt")
 

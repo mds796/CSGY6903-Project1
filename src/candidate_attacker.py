@@ -1,12 +1,12 @@
 from copy import deepcopy
 
-from src.attacker import Attacker, SPACE
+from src.attacker import Attacker
 from src.cipher import DELIMITER, SubstitutionCipher
 from src.scorer import Scorer
 
 
-class DictionaryAttacker(Attacker):
-    def __init__(self, frequencies, dictionary, *args, **kwargs):
+class CandidateAttacker(Attacker):
+    def __init__(self, frequencies, candidate, *args, **kwargs):
         super().__init__(frequencies, *args, **kwargs)
 
         self.frequencies = frequencies
