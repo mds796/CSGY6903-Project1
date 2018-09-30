@@ -4,11 +4,7 @@ from src.cipher import DELIMITER, SubstitutionCipher
 from src.dictionary import Dictionary
 from src.candidate_attacker import CandidateAttacker
 
-<<<<<<< HEAD
-"""Path changed my Siddharth"""
-=======
 # """Path changed my Siddharth"""
->>>>>>> Added timeout to main.py.
 # from cipher import DELIMITER, SubstitutionCipher
 # from dictionary import Dictionary
 # from candidate_attacker import CandidateAttacker
@@ -82,7 +78,7 @@ class DictionaryCodeBreaker(Attacker):
 		return min([len(word) for word in self.dictionary])
 
 
-def breaker_with_candidates(frequencies, candidates, ciphertext):
+def breaker_with_candidate(frequencies, candidates, ciphertext):
 	return CandidateAttacker(frequencies, candidates, ciphertext).run()
 
 
