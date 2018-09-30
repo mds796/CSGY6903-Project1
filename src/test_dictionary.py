@@ -12,7 +12,7 @@ class TestDictionary(TestCase):
         self.assertEqual(set("foobar"), self.dictionary.letters())
 
     def test_letter_frequencies(self):
-        self.assertEqual({"f": 1, "o": 2, "b": 1, "a": 1, "r": 1}, self.dictionary.letter_frequencies())
+        self.assertEqual({"f": 0.5, "o": 1, "b": 0.5, "a": 0.5, "r": 0.5}, self.dictionary.letter_frequencies())
 
     def test_generate(self):
         text = self.dictionary.generate(10, indexer)

@@ -42,6 +42,9 @@ class Dictionary:
         for word in self.words:
             counter.update(word)
 
+        for letter in counter:
+            counter[letter] /= len(self.words)
+
         return counter
 
     def __hash__(self):

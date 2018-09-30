@@ -39,6 +39,7 @@ class DictionaryAttacker(Attacker):
     def attack_recursive(self, ciphertext_parts, candidate_cipher, accumulator):
         if len(ciphertext_parts) == 0:
             accumulator.append(candidate_cipher)
+            print("Found a candidate key: %s" % candidate_cipher)
         elif len(ciphertext_parts) < self.smallest_word:
             pass  # Could not find a key
         else:
