@@ -1,6 +1,9 @@
 from src.dictionary import Dictionary
 
 
+""" Path changed by Siddharth"""
+# from dictionary import Dictionary
+
 class Candidate:
     def __init__(self, text):
         self.text = text
@@ -33,3 +36,9 @@ def read_from_file(filename):
 
     return candidates
 
+
+def read_file_simple(filename):
+    content = None
+    with open(filename, 'r') as f:
+        content = f.readlines()
+        return content
