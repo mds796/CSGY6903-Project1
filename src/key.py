@@ -1,10 +1,12 @@
+from copy import deepcopy, copy
+
 from src.cipher import INVALID_LETTER, DELIMITER
 
 SPACE = " "
 
 
 class CandidateKey:
-    def __init__(self, cipher_text, key, inverted_key, frequencies):
+    def __init__(self, cipher_text, key, inverted_key, frequencies, cipher_text_index=0):
         self.cipher_text = cipher_text
         self.cipher_text_index = 0
 
@@ -104,3 +106,12 @@ class CandidateKey:
                 plaintext.append(INVALID_LETTER)
 
         return "".join(plaintext)
+
+    def __deepcopy__(self, memodict=None):
+        return CandidateKey(
+            self.cipher_text,
+            deepcopy(self.key),
+            copy(self.inverted_key),
+            self.frequencies,
+            self.cipher_text_index
+        )
