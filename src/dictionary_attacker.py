@@ -1,14 +1,12 @@
 from copy import deepcopy
 
-from src.attacker import Attacker, SPACE
+from src.key import SPACE
 from src.cipher import DELIMITER, SubstitutionCipher
 from src.scorer import Scorer
 
 
-class DictionaryAttacker(Attacker):
-    def __init__(self, frequencies, dictionary, *args, **kwargs):
-        super().__init__(frequencies, *args, **kwargs)
-
+class DictionaryAttacker:
+    def __init__(self, frequencies, dictionary):
         self.frequencies = frequencies
         self.dictionary = dictionary
         self.smallest_word = self.smallest_word_size()

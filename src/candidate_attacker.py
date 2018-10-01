@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from src.attacker import Attacker
+from src.key import Attacker
 from src.cipher import DELIMITER, SubstitutionCipher
 from src.scorer import Scorer
 
