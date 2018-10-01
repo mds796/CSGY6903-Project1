@@ -2,6 +2,9 @@ import asyncio
 
 from src.key import CandidateKey
 
+ONE_MINUTE = 60
+TWO_MINUTES = 2 * ONE_MINUTE
+
 
 class GenericAttacker:
     def __init__(self, frequencies, candidates, dictionary):
@@ -15,13 +18,21 @@ class GenericAttacker:
         """Attacks the given cipher text, to determine the encrypted plain text"""
 
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.candidates_attack(cipher_text))
+        return loop.run_until_complete(self.composite_attack(cipher_text))
+
+    async def composite_attack(self, cipher_text):
+        tasks = {self.candidates_attack(cipher_text), self.dictionary_attack(cipher_text)}
+
+        for attack in asyncio.as_completed(tasks, timeout=TWO_MINUTES):
+            plain_text = await attack
+            if plain_text is not None:
+                return plain_text
 
     async def candidates_attack(self, cipher_text):
         """Attacks the cipher_tet using the candidate texts."""
         tasks = self.candidate_attack_tasks(cipher_text)
 
-        for attack in asyncio.as_completed(tasks, timeout=60):
+        for attack in asyncio.as_completed(tasks, timeout=ONE_MINUTE):
             plain_text = await attack
             if plain_text is not None:
                 return plain_text
@@ -50,6 +61,9 @@ class GenericAttacker:
             return candidate_key.decrypt()
         else:
             return None
+
+    async def dictionary_attack(self, cipher_text):
+        pass
 
     @property
     def smallest_word_size(self):

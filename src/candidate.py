@@ -37,3 +37,11 @@ def read_from_file(filename):
 
     return candidates
 
+
+def merge_dictionary(candidates):
+    dictionary = Dictionary([])
+
+    for candidate in candidates:
+        dictionary = dictionary.merge(candidate.dictionary())
+
+    return dictionary

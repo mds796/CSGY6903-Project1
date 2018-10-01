@@ -2,7 +2,7 @@ from unittest import TestCase, skip
 
 import src.candidate
 import src.dictionary
-from src.main import breaker_with_candidates, breaker_with_dictionary
+from src.generic_attacker import GenericAttacker
 from src.cipher import generate_homophonic
 from src.dictionary import Dictionary
 from src.dictionary_attacker import DictionaryAttacker
@@ -16,7 +16,7 @@ class TestDictionaryAttacker(TestCase):
     def test_break_with_candidates(self):
         candidates = src.candidate.read_from_file("test1_candidate_5_plaintexts.txt")
 
-        self.breaker = breaker_with_candidates(FREQUENCIES, candidates)
+        self.breaker = GenericAttacker(FREQUENCIES, candidates, src.candidate.merge_dictionary(candidates))
 
         for plaintext in [candidate.text for candidate in candidates]:
             c = self.cipher.encrypt(plaintext)
@@ -26,7 +26,7 @@ class TestDictionaryAttacker(TestCase):
     def test_break_with_dictionary(self):
         dictionary = Dictionary(src.dictionary.read_from_file("test2_candidate_70_english_words.txt").shuffle().words[0:5])
 
-        self.breaker = breaker_with_dictionary(FREQUENCIES, dictionary)
+        self.breaker = GenericAttacker(FREQUENCIES, [], dictionary)
 
         plaintext = dictionary.generate(20)
         c = self.cipher.encrypt(plaintext)
