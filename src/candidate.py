@@ -45,3 +45,23 @@ def merge_dictionary(candidates):
         dictionary = dictionary.merge(candidate.dictionary())
 
     return dictionary
+
+
+if __name__ == "__main__":
+    from src.cipher import generate_homophonic
+    from src.main import FREQUENCIES
+    import argparse
+    import sys
+    import random
+
+    parser = argparse.ArgumentParser(
+        description="Generate homophonic substitution cipher text for a candidate plain text.")
+    parser.add_argument("--filename", help="The name of the file with candidate plain texts.",
+                        default="test1_candidate_5_plaintexts.txt")
+
+    namespace = parser.parse_args(sys.argv[1:])
+    plain_texts = read_from_file(namespace.filename)
+
+    random.shuffle(plain_texts)
+
+    print(generate_homophonic(FREQUENCIES).encrypt(plain_texts.pop().text))

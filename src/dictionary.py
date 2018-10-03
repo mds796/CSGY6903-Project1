@@ -1,5 +1,5 @@
-import random
 import itertools
+import random
 from collections import Counter
 
 
@@ -73,3 +73,21 @@ def read_from_file(filename):
             words.append(line.strip().lower())
 
     return Dictionary(words)
+
+
+if __name__ == "__main__":
+    from src.cipher import generate_homophonic
+    from src.main import FREQUENCIES
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        description="Generate homophonic substitution cipher text for a dictionary plain text.")
+    parser.add_argument("--filename", help="The name of the file with the dictionary of words.",
+                        default="test2_candidate_70_english_words.txt")
+    parser.add_argument("--length", help="The size of the generated plain text.", type=int, default="500")
+
+    namespace = parser.parse_args(sys.argv[1:])
+    plain_text = read_from_file(namespace.filename).generate(namespace.length)
+
+    print(generate_homophonic(FREQUENCIES).encrypt(plain_text))

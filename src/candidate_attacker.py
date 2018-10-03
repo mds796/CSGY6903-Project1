@@ -19,9 +19,12 @@ class CandidateAttacker:
 
     async def attack_with_timeout(self, cipher_text):
         """Runs a candidate attack, followed by a dictionary attack, and falls back to selecting a random candidate."""
-        candidate_key = await asyncio.wait_for(self.candidates_attack(cipher_text), timeout=CANDIDATE_TIMEOUT)
-        if candidate_key is not None:
-            return candidate_key
+        try:
+            candidate_key = await asyncio.wait_for(self.candidates_attack(cipher_text), timeout=CANDIDATE_TIMEOUT)
+            if candidate_key is not None:
+                return candidate_key
+        except asyncio.TimeoutError:
+            pass
 
         return random.shuffle(self.candidates).pop()
 

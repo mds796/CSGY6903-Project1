@@ -23,10 +23,12 @@ class DictionaryAttacker:
 
     async def attack_with_timeout(self, cipher_text):
         """Runs a dictionary attack, and falls back to a random key."""
-
-        dictionary_key = await asyncio.wait_for(self.dictionary_attack(cipher_text), timeout=DICTIONARY_TIMEOUT)
-        if dictionary_key is not None:
-            return dictionary_key
+        try:
+            dictionary_key = await asyncio.wait_for(self.dictionary_attack(cipher_text), timeout=DICTIONARY_TIMEOUT)
+            if dictionary_key is not None:
+                return dictionary_key
+        except asyncio.TimeoutError:
+            pass
 
         return cipher.generate_homophonic(self.frequencies)
 
@@ -51,7 +53,7 @@ class DictionaryAttacker:
         """The sub-tasks for a dictionary based cipher-text attack."""
         tasks = set()
 
-        for word in self.dictionary:
+        for word in self.dictionary.shuffle():
             coroutine = self.word_attack(key, keys, word)
             tasks.add(asyncio.ensure_future(coroutine))
 

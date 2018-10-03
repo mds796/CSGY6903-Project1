@@ -1,11 +1,9 @@
-import collections
 from unittest import TestCase
 
-import src.candidate
 import src.dictionary
-from src.dictionary_attacker import DictionaryAttacker
 from src.cipher import generate_homophonic
 from src.dictionary import Dictionary
+from src.dictionary_attacker import DictionaryAttacker
 from src.main import FREQUENCIES
 
 
