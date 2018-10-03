@@ -26,7 +26,9 @@ class CandidateAttacker:
         except asyncio.TimeoutError:
             pass
 
-        return random.shuffle(self.candidates).pop()
+        options = list(self.candidates)
+        random.shuffle(options)
+        return options.pop()
 
     async def candidates_attack(self, cipher_text):
         """Attacks the cipher_tet using the candidate texts."""
