@@ -39,6 +39,7 @@ def run(frequencies):
         dictionary = src.dictionary.read_from_file(namespace.dictionary)
         attacker = DictionaryAttacker(frequencies, dictionary)
 
+    print("Now attempting to break the cipher...")
     print(attacker.attack(cipher_text))
 
 
