@@ -28,7 +28,7 @@ class CandidateAttacker:
 
         options = list(self.candidates)
         random.shuffle(options)
-        return options.pop()
+        return options.pop().text
 
     async def candidates_attack(self, cipher_text):
         """Attacks the cipher_tet using the candidate texts."""
