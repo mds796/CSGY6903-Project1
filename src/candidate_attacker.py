@@ -15,14 +15,14 @@ class CandidateAttacker:
         """Attacks the given cipher text, to determine the encrypted plain text"""
 
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.attack_with_timeout(cipher_text)).decrypt()
+        return loop.run_until_complete(self.attack_with_timeout(cipher_text))
 
     async def attack_with_timeout(self, cipher_text):
         """Runs a candidate attack, followed by a dictionary attack, and falls back to selecting a random candidate."""
         try:
             candidate_key = await asyncio.wait_for(self.candidates_attack(cipher_text), timeout=CANDIDATE_TIMEOUT)
             if candidate_key is not None:
-                return candidate_key
+                return candidate_key.decrypt()
         except asyncio.TimeoutError:
             pass
 
