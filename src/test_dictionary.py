@@ -17,7 +17,7 @@ class TestDictionary(TestCase):
     def test_generate(self):
         text = self.dictionary.generate(10, indexer)
 
-        self.assertEqual("foo foo", text)
+        self.assertEqual("foo foo fo", text)
 
     def test_shuffle(self):
         shuffled = self.dictionary.shuffle(shuffle)

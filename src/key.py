@@ -8,7 +8,7 @@ SPACE = " "
 class CandidateKey:
     def __init__(self, cipher_text, key, inverted_key, frequencies, cipher_text_index=0):
         self.cipher_text = cipher_text
-        self.cipher_text_index = 0
+        self.cipher_text_index = cipher_text_index
 
         self.key = key
         self.inverted_key = inverted_key
@@ -23,6 +23,9 @@ class CandidateKey:
     @property
     def cipher_text_parts(self):
         """Parses the cipher text string into a list of integers."""
+        if self.cipher_text == "" or self.cipher_text is None:
+            return []
+
         if self._cipher_text_parts is not None:
             return self._cipher_text_parts
 
@@ -46,21 +49,18 @@ class CandidateKey:
 
         return len(self.remaining_cipher_text_parts) == 0
 
-    def add_assignment(self, word, smallest_word_size):
+    def add_assignment(self, word):
         """
         Adds an assignment of a letter to a cipher_text.
         Returns True if the assignment was successful, false otherwise.
         """
+        if word == "" or word is None:
+            return True
 
-        if self.must_add_space(smallest_word_size, word):
-            word += SPACE
+        padded_word = word + SPACE
+        word_cipher_text_parts = self.word_cipher_text_parts(padded_word)
 
-        word_cipher_text_parts = self.word_cipher_text_parts(word)
-
-        if self.is_invalid_word_assignment(smallest_word_size):
-            return False
-
-        for letter, cipher_text in zip(word, word_cipher_text_parts):
+        for letter, cipher_text in zip(padded_word, word_cipher_text_parts):
             if self.is_invalid_letter_assignment(letter, cipher_text):
                 return False
 
@@ -72,15 +72,6 @@ class CandidateKey:
             self.inverted_key[cipher_text] = letter
 
         return True
-
-    def must_add_space(self, smallest_word_size, word):
-        return (len(self.remaining_cipher_text_parts) - len(word)) >= smallest_word_size + 1
-
-    def is_invalid_word_assignment(self, smallest_word_size):
-        remaining_parts = len(self.remaining_cipher_text_parts)
-
-        if remaining_parts < 0 or remaining_parts < smallest_word_size:
-            return False  # not enough space for the word, or space to add the next word
 
     def is_invalid_letter_assignment(self, letter, cipher_text):
         return self.cipher_is_assigned(letter, cipher_text) or self.has_too_many_cipher_texts(letter, cipher_text)

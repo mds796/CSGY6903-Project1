@@ -1,75 +1,61 @@
-from copy import deepcopy
+import asyncio
+import random
 
-from src.key import Attacker
-from src.cipher import DELIMITER, SubstitutionCipher
-from src.scorer import Scorer
+from src.key import CandidateKey
+
+CANDIDATE_TIMEOUT = 60
 
 
-class CandidateAttacker(Attacker):
-    def __init__(self, frequencies, candidate, *args, **kwargs):
-        super().__init__(frequencies, *args, **kwargs)
-
+class CandidateAttacker:
+    def __init__(self, frequencies, candidates):
         self.frequencies = frequencies
-        self.dictionary = dictionary
-        self.smallest_word = self.smallest_word_size()
+        self.candidates = candidates
 
-    def smallest_word_size(self):
-        if len(self.dictionary.words) == 0:
-            return 0
+    def attack(self, cipher_text):
+        """Attacks the given cipher text, to determine the encrypted plain text"""
 
-        return min([len(word) for word in self.dictionary])
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.attack_with_timeout(cipher_text)).decrypt()
 
-    def attack(self, ciphertext):
-        if ciphertext == "" or ciphertext is None:
-            return ""
+    async def attack_with_timeout(self, cipher_text):
+        """Runs a candidate attack, followed by a dictionary attack, and falls back to selecting a random candidate."""
+        candidate_key = await asyncio.wait_for(self.candidates_attack(cipher_text), timeout=CANDIDATE_TIMEOUT)
+        if candidate_key is not None:
+            return candidate_key
 
-        ciphertext_parts = [int(c) for c in ciphertext.split(DELIMITER)]
-        accumulator = []
+        return random.shuffle(self.candidates).pop()
 
-        self.attack_recursive(ciphertext_parts, SubstitutionCipher({}), accumulator)
+    async def candidates_attack(self, cipher_text):
+        """Attacks the cipher_tet using the candidate texts."""
+        tasks = self.candidate_attack_tasks(cipher_text)
 
-        if len(accumulator) > 0:
-            best_cipher = Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator)
-            return best_cipher.decrypt(ciphertext)
+        for attack in asyncio.as_completed(tasks):
+            key = await attack
+            if key is not None:
+                return key
+
+        return None
+
+    def candidate_attack_tasks(self, cipher_text):
+        """The sub-tasks for a candidate-text based cipher-text attack."""
+        tasks = set()
+
+        for candidate in self.candidates:
+            coroutine = self.candidate_attack(candidate, cipher_text)
+            tasks.add(asyncio.ensure_future(coroutine))
+
+        return tasks
+
+    async def candidate_attack(self, candidate, cipher_text):
+        """Attacks the given cipher text using the given candidate. Returns None if no valid key was found."""
+        candidate_key = CandidateKey(cipher_text, {}, {}, self.frequencies)
+
+        for word in candidate.words:
+            success = candidate_key.add_assignment(word)
+            if not success:
+                return None
+
+        if candidate_key.is_valid_key():
+            return candidate_key
         else:
             return None
-
-    def attack_recursive(self, ciphertext_parts, candidate_cipher, accumulator):
-        if len(ciphertext_parts) == 0:
-            accumulator.append(candidate_cipher)
-            print("Found a candidate key: %s" % candidate_cipher)
-        elif len(ciphertext_parts) < self.smallest_word:
-            pass  # Could not find a key
-        else:
-            for word in self.dictionary:
-                copy_cipher = SubstitutionCipher(deepcopy(candidate_cipher.key))
-
-                word_plaintext = word
-                word_ciphertext = ciphertext_parts[:len(word_plaintext)]
-
-                remaining_ciphertext = ciphertext_parts[len(word_plaintext):]
-
-                try:
-                    for m, c in zip(word_plaintext, word_ciphertext):
-                        self.update_key(m, c, copy_cipher)
-
-                    if len(remaining_ciphertext) > self.smallest_word:
-                        c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
-                        self.update_key(SPACE, c, copy_cipher)
-                except ValueError:
-                    continue
-
-                self.attack_recursive(remaining_ciphertext, copy_cipher, accumulator)
-
-    @staticmethod
-    def update_key(m, c, candidate_cipher):
-        inverted_key = candidate_cipher.inverted_key
-
-        if c in inverted_key and inverted_key[c] != m:
-            raise (ValueError("Already mapped ciphertext letter to different plaintext letter."))
-        elif c in inverted_key:
-            pass  # already mapped ciphertext letter to same plaintext letter
-        elif m in candidate_cipher.key:
-            candidate_cipher.key[m].append(c)
-        else:
-            candidate_cipher.key[m] = [c]

@@ -28,13 +28,13 @@ class Dictionary:
             index = indexer(0, len(self.words) - 1)
 
             word = self.words[index]
-            size += len(word)
 
-            if size < max_size:
-                selected.append(word)
-                size += 1  # add the space
+            size += len(word) + 1
 
-        return " ".join(selected)
+            selected.append(word)
+            selected.append(" ")
+
+        return "".join(selected)[:max_size]
 
     def letter_frequencies(self):
         counter = Counter()

@@ -1,73 +1,70 @@
+import asyncio
+from collections import deque
 from copy import deepcopy
 
-from src.key import SPACE
-from src.cipher import DELIMITER, SubstitutionCipher
+from src import cipher
+from src.key import CandidateKey
 from src.scorer import Scorer
+
+ONE_MINUTE = 60
+DICTIONARY_TIMEOUT = (2 * ONE_MINUTE) + 55
 
 
 class DictionaryAttacker:
     def __init__(self, frequencies, dictionary):
         self.frequencies = frequencies
         self.dictionary = dictionary
-        self.smallest_word = self.smallest_word_size()
 
-    def smallest_word_size(self):
-        if len(self.dictionary.words) == 0:
-            return 0
+    def attack(self, cipher_text):
+        """Attacks the given cipher text, to determine the encrypted plain text"""
 
-        return min([len(word) for word in self.dictionary])
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.attack_with_timeout(cipher_text)).decrypt()
 
-    def attack(self, ciphertext):
-        if ciphertext == "" or ciphertext is None:
-            return ""
+    async def attack_with_timeout(self, cipher_text):
+        """Runs a dictionary attack, and falls back to a random key."""
 
-        ciphertext_parts = [int(c) for c in ciphertext.split(DELIMITER)]
-        accumulator = []
+        dictionary_key = await asyncio.wait_for(self.dictionary_attack(cipher_text), timeout=DICTIONARY_TIMEOUT)
+        if dictionary_key is not None:
+            return dictionary_key
 
-        self.attack_recursive(ciphertext_parts, SubstitutionCipher({}), accumulator)
+        return cipher.generate_homophonic(self.frequencies)
 
-        if len(accumulator) > 0:
-            best_cipher = Scorer(self.dictionary, self.frequencies).min(ciphertext, accumulator)
-            return best_cipher.decrypt(ciphertext)
-        else:
-            return None
+    async def dictionary_attack(self, cipher_text):
+        """Schedules the sub-tasks to perform a dictionary attack on the given cipher-text."""
+        keys = deque()
+        candidate_key = CandidateKey(cipher_text, {}, {}, self.frequencies)
+        tasks = self.dictionary_attack_tasks(candidate_key, keys)
 
-    def attack_recursive(self, ciphertext_parts, candidate_cipher, accumulator):
-        if len(ciphertext_parts) == 0:
-            accumulator.append(candidate_cipher)
-            print("Found a candidate key: %s" % candidate_cipher)
-        elif len(ciphertext_parts) < self.smallest_word:
-            pass  # Could not find a key
-        else:
-            for word in self.dictionary:
-                copy_cipher = SubstitutionCipher(deepcopy(candidate_cipher.key))
+        while len(tasks) > 0:
+            new_tasks = set()
 
-                word_plaintext = word
-                word_ciphertext = ciphertext_parts[:len(word_plaintext)]
+            for task in asyncio.as_completed(tasks):
+                sub_tasks = await task
+                new_tasks = new_tasks.union(sub_tasks)
 
-                remaining_ciphertext = ciphertext_parts[len(word_plaintext):]
+            tasks = new_tasks
 
-                try:
-                    for m, c in zip(word_plaintext, word_ciphertext):
-                        self.update_key(m, c, copy_cipher)
+        return Scorer(self.dictionary, self.frequencies).best_key([candidate_key] + list(keys))
 
-                    if len(remaining_ciphertext) > self.smallest_word:
-                        c, remaining_ciphertext = remaining_ciphertext[0], remaining_ciphertext[1:]
-                        self.update_key(SPACE, c, copy_cipher)
-                except ValueError:
-                    continue
+    def dictionary_attack_tasks(self, key, keys):
+        """The sub-tasks for a dictionary based cipher-text attack."""
+        tasks = set()
 
-                self.attack_recursive(remaining_ciphertext, copy_cipher, accumulator)
+        for word in self.dictionary:
+            coroutine = self.word_attack(key, keys, word)
+            tasks.add(asyncio.ensure_future(coroutine))
 
-    @staticmethod
-    def update_key(m, c, candidate_cipher):
-        inverted_key = candidate_cipher.inverted_key
+        return tasks
 
-        if c in inverted_key and inverted_key[c] != m:
-            raise (ValueError("Already mapped ciphertext letter to different plaintext letter."))
-        elif c in inverted_key:
-            pass  # already mapped ciphertext letter to same plaintext letter
-        elif m in candidate_cipher.key:
-            candidate_cipher.key[m].append(c)
-        else:
-            candidate_cipher.key[m] = [c]
+    async def word_attack(self, source_key, keys, word):
+        """Attacks a cipher-text using a single dictionary word. Returns tasks to continue the attack"""
+        key = deepcopy(source_key)
+
+        success = key.add_assignment(word)
+        if success and key.is_valid_key():
+            keys.append(key)
+        elif success:
+            return self.dictionary_attack_tasks(key, keys)
+
+        return set()
