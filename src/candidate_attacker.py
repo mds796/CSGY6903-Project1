@@ -55,10 +55,9 @@ class CandidateAttacker:
         """Attacks the given cipher text using the given candidate. Returns None if no valid key was found."""
         candidate_key = CandidateKey(cipher_text, {}, {}, self.frequencies)
 
-        for word in candidate.words:
-            success = candidate_key.add_assignment(word)
-            if not success:
-                return None
+        success = candidate_key.add_assignment(candidate.text)
+        if not success:
+            return None
 
         if candidate_key.is_valid_key():
             return candidate_key
