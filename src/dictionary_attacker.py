@@ -28,7 +28,7 @@ class DictionaryAttacker:
             if dictionary_key is not None:
                 return dictionary_key
         except asyncio.TimeoutError:
-            pass
+            print("Out of time! Using fallback answer.")
 
         return cipher.generate_homophonic(self.frequencies)
 

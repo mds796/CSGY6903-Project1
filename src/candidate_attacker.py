@@ -24,7 +24,7 @@ class CandidateAttacker:
             if candidate_key is not None:
                 return candidate_key.decrypt()
         except asyncio.TimeoutError:
-            pass
+            print("Out of time! Using fallback answer.")
 
         options = list(self.candidates)
         random.shuffle(options)
