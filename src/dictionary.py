@@ -77,7 +77,7 @@ def read_from_file(filename):
 
 if __name__ == "__main__":
     from src.cipher import generate_homophonic
-    from src.main import FREQUENCIES
+    from main import FREQUENCIES
     import argparse
     import sys
 

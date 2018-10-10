@@ -4,7 +4,7 @@ import src.dictionary
 from src.cipher import generate_homophonic
 from src.dictionary import Dictionary
 from src.dictionary_attacker import DictionaryAttacker
-from src.main import FREQUENCIES
+from main import FREQUENCIES
 
 
 class TestDictionaryAttacker(TestCase):

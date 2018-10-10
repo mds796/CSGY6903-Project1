@@ -3,7 +3,7 @@ from unittest import TestCase
 import src.candidate
 from src.candidate_attacker import CandidateAttacker
 from src.cipher import generate_homophonic
-from src.main import FREQUENCIES
+from main import FREQUENCIES
 
 
 class TestDictionaryAttacker(TestCase):

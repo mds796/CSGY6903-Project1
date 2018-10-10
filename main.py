@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 import src.candidate
 from src.candidate_attacker import CandidateAttacker
@@ -14,7 +13,7 @@ FREQUENCIES = {" ": 19, "a": 7, "b": 1, "c": 2, "d": 4, "e": 10, "f": 2, "g": 2,
 def run(frequencies):
     """
     Sample usage:
-        python3 -m src.main --dictionary test2_candidate_70_english_words.txt \
+        python3 main.py --dictionary test2_candidate_70_english_words.txt \
             --candidates test1_candidate_5_plaintexts.txt --test 1
     """
     parser = argparse.ArgumentParser(description="Attack homophonic substitution ciphers.")
@@ -27,7 +26,7 @@ def run(frequencies):
                         choices=["1", "2"],
                         default="1")
 
-    namespace = parser.parse_args(sys.argv[1:])
+    namespace = parser.parse_args()
 
     cipher_text = input("Please enter the cipher text: \n")
     attacker = None
